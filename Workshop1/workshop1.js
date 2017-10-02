@@ -13,7 +13,7 @@ var config =
 
 var pool = new Pool(config);
 
-app.set('port', (8080));
+app.set('port', (process.env.NODE_PORT));
 app.use(bodyParser.json({type: 'application/json'}));
 app.use(bodyParser.urlencoded({extended: true}));
 
