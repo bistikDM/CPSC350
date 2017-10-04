@@ -24,7 +24,7 @@ app.get('/api', async (req, res) =>
 	{
 		try 
 		{
-			var response = await pool.query('SELECT attendee FROM workshop WHERE workshops = $1', [workshopClass]);
+			var response = await pool.query('SELECT attendees FROM workshop WHERE workshops = $1', [workshopClass]);
 			console.log(JSON.stringify(response.rows));
 			res.json(response.rows);
 		} catch(e)
@@ -51,7 +51,7 @@ app.get('/api', async (req, res) =>
 
 app.post('/api', async (req, res) =>
 {
-	var attendee = req.body.attendee;
+	var attendee = req.body.attendees;
 	var workshopClass = req.body.workshops;
 	if (!attendee || !workshopClass)
 	{
@@ -62,7 +62,7 @@ app.post('/api', async (req, res) =>
 	{
 		try
 		{
-			var checkAttendee = await pool.query('SELECT attendee FROM workshop WHERE workshopClass = $1', [workshopClass]);
+			var checkAttendee = await pool.query('SELECT attendees FROM workshop WHERE workshops = $1', [workshopClass]);
 			if (!checkAttendee)
 			{
 				try
