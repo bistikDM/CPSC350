@@ -63,7 +63,7 @@ app.post('/api', async (req, res) =>
 		try
 		{
 			var checkAttendee = await pool.query('SELECT attendees FROM workshop WHERE workshops = $1', [workshopClass]);
-			if (!checkAttendee)
+			if (checkAttendee.rows.length == 0)
 			{
 				try
 				{
