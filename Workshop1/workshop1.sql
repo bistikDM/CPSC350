@@ -3,8 +3,8 @@ CREATE DATABASE workshop1;
 
 CREATE TABLE workshop
 (
-	attendee VARCHAR(50),
-	workshop_class VARCHAR(50)
+	attendees VARCHAR(50),
+	workshops VARCHAR(50)
 );
 
 INSERT INTO workshop VALUES 

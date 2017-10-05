@@ -26,7 +26,15 @@ app.get('/api', async (req, res) =>
 		{
 			var response = await pool.query('SELECT attendees FROM workshop WHERE workshops = $1', [workshopClass]);
 			console.log(JSON.stringify(response.rows));
-			res.json(response.rows);
+			var attendeeList = response.rows.map(function(x)
+			{
+				return x.attendees;
+			});
+			var responseObject =
+			{
+				'attendees' : attendeeList
+			};
+			res.json(responseObject);
 		} catch(e)
 		{
 			res.json({error: 'Workshop not found'});
@@ -38,16 +46,21 @@ app.get('/api', async (req, res) =>
 		{
 			var response = await pool.query('SELECT workshops FROM workshop');
 			console.log(JSON.stringify(response.rows));
-			res.json(response.rows);
+			var workshopList = response.rows.map(function(x)
+			{
+				return x.workshops;
+			});
+			var responseObject =
+			{
+				'workshops' : workshopList
+			};
+			res.json(responseObject);
 		} catch(e)
 		{
 			console.log('Error running get', e);
 		}
 	}
-	
 });
-
-//Works on nodejs but errors on node at line 20 => app.get('/api', async (req, res)
 
 app.post('/api', async (req, res) =>
 {
@@ -68,7 +81,11 @@ app.post('/api', async (req, res) =>
 				try
 				{
 					var input = await pool.query('INSERT INTO workshop VALUES ($1, $2)', [attendee, workshopClass]);
-					res.json({status: 'inserted'});
+					res.json(
+						{
+							'attendee' : attendee,
+							'workshop' : workshopClass
+						});
 				} catch(e)
 				{
 					console.log('Error running insert', e);
