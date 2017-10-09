@@ -34,10 +34,18 @@ app.get('/api', async (req, res) =>
 			{
 				'attendees' : attendeeList
 			};
-			res.json(responseObject);
+//			res.json(responseObject);
 		} catch(e)
 		{
 			res.json({error: 'Workshop not found'});
+		}
+		if(response.rows.length == 0)
+		{
+			res.json({error: 'Workshop not found'});
+		}
+		else
+		{
+			res.json(responseObject);
 		}
 	}
 	else
