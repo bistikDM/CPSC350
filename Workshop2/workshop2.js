@@ -51,9 +51,9 @@ app.post('/create-user', async (req, res) =>
 });
 
 //Delete user request.
-app.get('/delete-user', async (req, res) =>
+app.delete('/delete-user', async (req, res) =>
 {
-    var username = req.query.username;
+    var username = req.body.username;
     
     if(!username)
     {
