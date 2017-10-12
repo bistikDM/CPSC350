@@ -175,6 +175,9 @@ app.post('/enroll', async (req, res) =>
             var checkUsername = await pool.query('SELECT user_name FROM user_database WHERE user_name = $1', [username]);
             var maxSeats = await pool.query('SELECT max_seats FROM workshop_database WHERE title = $1 AND start_date = $2', [title, date]);
             var checkSeats = await pool.query('SELECT COUNT(ed.user_name) FROM enrollment_database AS ed INNER JOIN workshop_database AS wd ON ed.workshop_id = wd.workshop_id');
+            var alreadyEnrolled = await pool.query(
+               'SELECT enrolled.user_name FROM (SELECT ud.user_name FROM user_database AS ud INNER JOIN enrollment_database AS ed ON ed.user_name = ud.user_name INNER JOIN ' + 
+               'workshop_database AS wd ON ed.workshop_id = (SELECT workshop_id FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3)) AS enrolled WHERE enrolled.user_name = $4', [title, date, location, username]);
             if(checkWorkshop.rows.length == 0)
             {
                 res.json({status : 'workshop does not exist'});
@@ -183,10 +186,14 @@ app.post('/enroll', async (req, res) =>
             {
                 res.json({status : 'user does not exist'});
             }
-            else if(checkSeats.rows[0].count < maxSeats.rows[0].max_seats) //Check to see if the calls on both sides are valid.
+            else if((checkSeats.rows[0].count < maxSeats.rows[0].max_seats) && alreadyEnrolled.rows.length == 0)
             {
                 await pool.query('INSERT INTO enrollment_database (workshop_id, user_name) VALUES ((SELECT workshop_id FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3), $4)', [title, date, location, username]);
                 res.json({status : 'user added'});
+            }
+            else if(!(alreadyEnrolled.rows.length == 0))
+            {
+                res.json({status : 'user already enrolled'})
             }
             else
             {
@@ -221,7 +228,7 @@ app.get('/list-workshops', async (req, res) =>
 app.get('/attendees', async (req, res) =>
 {
    var title = req.query.title;
-   var date = req.query.date;
+   var date = dateFormat(req.query.date, 'yyyy-mm-dd');
    var location = req.query.location;
    
    if(!title || !date || !location)

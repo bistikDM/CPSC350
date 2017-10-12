@@ -39,4 +39,6 @@ CREATE TABLE enrollment_database
 
 CREATE ROLE workshop2 WITH LOGIN;
 GRANT SELECT, INSERT, DELETE ON user_database, workshop_database, instructor_database, enrollment_database TO workshop2;
+GRANT USAGE, SELECT ON SEQUENCE workshop_database_workshop_id_fk TO workshop2;
+GRANT USAGE, SELECT ON SEQUENCE instructor_database_instructor_id_fk TO workshop2;
 \password workshop2
