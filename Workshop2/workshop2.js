@@ -174,10 +174,9 @@ app.post('/enroll', async (req, res) =>
             var checkWorkshop = await pool.query('SELECT title FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3', [title, date, location]);
             var checkUsername = await pool.query('SELECT user_name FROM user_database WHERE user_name = $1', [username]);
             var maxSeats = await pool.query('SELECT max_seats FROM workshop_database WHERE title = $1 AND start_date = $2', [title, date]);
-            var checkSeats = await pool.query('SELECT COUNT(ed.user_name) FROM enrollment_database AS ed INNER JOIN workshop_database AS wd ON ed.workshop_id = wd.workshop_id');
-            var alreadyEnrolled = await pool.query(
-               'SELECT enrolled.user_name FROM (SELECT ud.user_name FROM user_database AS ud INNER JOIN enrollment_database AS ed ON ed.user_name = ud.user_name INNER JOIN ' + 
-               'workshop_database AS wd ON ed.workshop_id = (SELECT workshop_id FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3)) AS enrolled WHERE enrolled.user_name = $4', [title, date, location, username]);
+            var checkSeats = await pool.query('SELECT COUNT(ud.first_name) FROM user_database AS ud INNER JOIN enrollment_database AS ed ON ed.user_name = ud.user_name WHERE ed.workshop_id = (SELECT workshop_id FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3)', [title, date, location]);
+            var alreadyEnrolled = await pool.query('SELECT enrolled.user_name FROM (SELECT ud.user_name FROM user_database AS ud INNER JOIN enrollment_database AS ed ON ed.user_name = ud.user_name INNER JOIN ' + 
+		                   'workshop_database AS wd ON ed.workshop_id = (SELECT workshop_id FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3)) AS enrolled WHERE enrolled.user_name = $4', [title, date, location, username]);
             if(checkWorkshop.rows.length == 0)
             {
                 res.json({status : 'workshop does not exist'});
@@ -240,8 +239,7 @@ app.get('/attendees', async (req, res) =>
        try
        {
             var attendeeList = await pool.query(
-               'SELECT ud.first_name, ud.last_name FROM user_database AS ud INNER JOIN enrollment_database AS ed ON ed.user_name = ud.user_name INNER JOIN ' + 
-               'workshop_database AS wd ON ed.workshop_id = (SELECT workshop_id FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3)', [title, date, location]);
+               'SELECT ud.first_name, ud.last_name FROM user_database AS ud INNER JOIN enrollment_database AS ed ON ed.user_name = ud.user_name WHERE ed.workshop_id = (SELECT workshop_id FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3)', [title, date, location]);
             var attendees = {attendees : []};
             for(var x = 0; x < attendeeList.rows.length; x++)
             {
