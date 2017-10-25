@@ -253,6 +253,95 @@ app.get('/attendees', async (req, res) =>
    }
 });
 
+//Delete workshop request.
+app.delete('/delete-workshop', async (req, res) =>
+{
+    var title = req.body.title;
+    var date = dateFormat(req.body.date, 'yyyy-mm-dd');
+    var location = req.body.location;
+    
+    if(!title || !date || !location)
+    {
+        res.json({error : 'Parameters not given'});
+    }
+    else
+    {
+        try
+        {
+            var attendeeList = await pool.query(
+               'SELECT COUNT(ud.first_name) FROM user_database AS ud INNER JOIN enrollment_database AS ed ON ed.user_name = ud.user_name WHERE ed.workshop_id = (SELECT workshop_id FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3)', [title, date, location]);
+            if(attendeeList.rows[0].count == 0)
+            {
+                await pool.query('DELETE FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3', [title, date, location]);
+                res.json({status : 'deleted'});
+            }
+            else
+            {
+                res.json({status: 'the workshop is not empty'});
+            }
+        } catch(e)
+        {
+            console.log('Error running request', e);
+        }
+    }
+});
+
+//User enrollment request.
+app.get('/user-enrollment', async (req, res) =>
+{
+   var username = req.query.username;
+   
+   if(!username)
+   {
+       res.json({error : 'Parameters not given'});
+   }
+   else
+   {
+       try
+       {
+            var workshopList = await pool.query(
+               'SELECT wd.title AS title, wd.start_date AS start_date, wd.location AS location FROM workshop_database AS wd INNER JOIN enrollment_database AS ed ON ed.workshop_id = wd.workshop_id WHERE ed.user_name = (SELECT user_name FROM user_database WHERE user_name = $1)', [username]);
+            var workshops = {workshops : []};
+            for(var x = 0; x < workshopList.rows.length; x++)
+            {
+                workshops.workshops.push({title : workshopList.rows[x].title, date : dateFormat(workshopList.rows[x].start_date, 'yyyy-mm-dd'), location : workshopList.rows[x].location});
+            }
+            res.json(workshops);
+       } catch(e)
+       {
+           console.log('Error running user enrollment request', e);
+       }
+   }
+});
+
+//List workshop by instructor request.
+app.get('/instructor-workshop', async (req, res) =>
+{
+   var instructor = req.query.instructor;
+   
+   if(!instructor)
+   {
+       res.json({error : 'Parameters not given'});
+   }
+   else
+   {
+       try
+       {
+            var workshopList = await pool.query(
+               'SELECT wd.title AS title, wd.start_date AS start_date, wd.location AS location FROM workshop_database AS wd INNER JOIN instructor_database AS id ON id.instructor_id = wd.instructor_id WHERE id.instructor = $1', [instructor]);
+            var workshops = {workshops : []};
+            for(var x = 0; x < workshopList.rows.length; x++)
+            {
+                workshops.workshops.push({title : workshopList.rows[x].title, date : dateFormat(workshopList.rows[x].start_date, 'yyyy-mm-dd'), location : workshopList.rows[x].location});
+            }
+            res.json(workshops);
+       } catch(e)
+       {
+           console.log('Error running instructor workshop request', e);
+       }
+   }
+});
+
 app.listen(app.get('port'), () => 
 {
 	console.log('Running');
