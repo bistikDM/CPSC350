@@ -17,9 +17,9 @@ class App extends React.Component
                 <div>
                     <Nav />
                     <Switch>
-                        <Route path = '/' component = {Home} />
-                        <Route exact path = './PageOne' component = {PageOne} />
-                        <Route exact path = './PageTwo' component = {PageTwo} />
+                        <Route exact path = '/' component = {Home} />
+                        <Route path = '/PageOne' component = {PageOne} />
+                        <Route path = '/PageTwo' component = {PageTwo} />
                         <Route render = {function() 
                         {
                             return <p>Not Found</p>;
