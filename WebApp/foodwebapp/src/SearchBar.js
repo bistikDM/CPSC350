@@ -1,18 +1,26 @@
 import React from 'react';
 
-class SearchBar extends React.Component
+export class SearchBar extends React.Component
 {
+    constructor(props)
+    {
+        super(props);
+        
+        this.handleChange=this.handleChange.bind(this);
+    }
+    
+    handleChange(query) 
+    {
+        const name = query.target.value;
+        this.props.axiosGet(name);
+    }
+    
     render()
     {
-        document.getElementById('description').onkeyup = function()
-        {
-            
-        };
-        
         return (
-            <input type='search' name='description' />
+            <input type='search' name='description' onChange={this.handleChange} />
         );
     }
 }
 
-// http://inimino.org/~inimino/blog/javascript_live_text_input
+export default SearchBar;

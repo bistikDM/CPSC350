@@ -23,6 +23,12 @@ app.get('/api/nutrition', async(req, res) =>
     try
     {
         var result = await pool.query('SELECT description, kcal, protein_g, lipid_total_g, cholestrl_mg, carbohydrate_g, fiber_td_g, sugar_g FROM entries WHERE description LIKE $1 LIMIT 25', [name]);
+        
+        res.setHeader('Access-Control-Allow-Origin', 'http://postgresql-hydron.c9users.io:8081');
+        res.setHeader('Access-Control-Allow-Methods', 'GET');
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,contenttype'); 
+        res.setHeader('Access-Control-Allow-Credentials', true); 
+        
         res.json(result.rows);
     } catch(e)
     {

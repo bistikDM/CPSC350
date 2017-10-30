@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import SearchBar from './SearchBar.js';
+import Nutrition from './Nutrition.js';
 
 class App extends Component {
   render() {
@@ -13,8 +13,8 @@ class App extends Component {
         </header>
         <p className="App-intro">
           Please enter the name of the food to search. <br />
-          <SearchBar />
         </p>
+        <Nutrition />
       </div>
     );
   }
