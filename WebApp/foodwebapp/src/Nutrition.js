@@ -18,7 +18,7 @@ class Nutrition extends React.Component
         Axios.get('https://postgresql-hydron.c9users.io/api/nutrition?name=' + query).then(function(response)
         {
             this.setState({results: response.data});
-        });  
+        }.bind(this));  
     }
     
     render()

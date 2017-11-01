@@ -17,14 +17,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/api/nutrition', async(req, res) =>
 {
-    var name = '%'+req.query.name+'%';
-    console.log(name);
+    var name = (req.query.name !== '') ? '%'+req.query.name+'%' : '';
     
     try
     {
         var result = await pool.query('SELECT description, kcal, protein_g, lipid_total_g, cholestrl_mg, carbohydrate_g, fiber_td_g, sugar_g FROM entries WHERE description LIKE $1 LIMIT 25', [name]);
         
-        res.setHeader('Access-Control-Allow-Origin', 'http://postgresql-hydron.c9users.io:8081');
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET');
         res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,contenttype'); 
         res.setHeader('Access-Control-Allow-Credentials', true); 
@@ -35,6 +34,11 @@ app.get('/api/nutrition', async(req, res) =>
         console.log('Error running request', e);
     }
 });
+
+if(process.end.NODE_ENV === 'production')
+{
+    app.use(express.static('foodwebapp/build'));
+}
 
 app.listen(app.get('port'), () => 
 {

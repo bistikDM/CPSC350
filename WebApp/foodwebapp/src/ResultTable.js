@@ -4,27 +4,45 @@ export class ResultTable extends React.Component
 {
     render() 
     {
-        var rowData=this.props.results;
+        var rowData=this.props.results.map((object, key) =>
+        {
+            return (
+                <tr key={key}>
+                    <td>{object.description}</td>
+                    <td>{(object.kcal === null) ? 'N/A' : object.kcal}</td>
+                    <td>{(object.protein_g === null) ? 'N/A' : object.protein_g}</td>
+                    <td>{(object.lipid_total_g === null) ? 'N/A' : object.lipid_total_g}</td>
+                    <td>{(object.cholestrl_mg === null) ? 'N/A' : object.cholestrl_mg}</td>
+                    <td>{(object.carbohydrate_g === null) ? 'N/A' : object.carbohydrate_g}</td>
+                    <td>{(object.fiber_td_g === null) ? 'N/A' : object.fiber_td_g}</td>
+                    <td>{(object.sugar_g === null) ? 'N/A' : object.sugar_g}</td>
+                </tr>);
+        });
         
         return (
             <table>
-                <tbody>
+                <thead>
                     <tr>
-                        <td>Description</td>
-                        <td>Calories (kcal)</td>
-                        <td>Protein (g)</td>
-                        <td>Total fat (g)</td>
-                        <td>Cholesterol (mg)</td>
-                        <td>Carbohydrate (g)</td>
-                        <td>Fiber (g)</td>
-                        <td>Sugar (g)</td>
+                        <th>Description</th>
+                        <th>Calories (kcal)</th>
+                        <th>Protein (g)</th>
+                        <th>Total fat (g)</th>
+                        <th>Cholesterol (mg)</th>
+                        <th>Carbohydrate (g)</th>
+                        <th>Fiber (g)</th>
+                        <th>Sugar (g)</th>
                     </tr>
-                    <PersonRow data = {rowData} />
+                </thead>
+                <tbody>
+                    {rowData}
                 </tbody>
             </table>
         );
     }
 }
+
+/*
+<PersonRow data = {rowData} />
 
 const PersonRow = (props) => 
 {
@@ -41,6 +59,7 @@ const PersonRow = (props) =>
         </tr>
     );
 };
+*/
 
 export default ResultTable;
 
