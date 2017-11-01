@@ -35,7 +35,7 @@ app.get('/api/nutrition', async(req, res) =>
     }
 });
 
-if(process.end.NODE_ENV === 'production')
+if(process.env.NODE_ENV === 'production')
 {
     app.use(express.static('foodwebapp/build'));
 }
