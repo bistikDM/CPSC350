@@ -1,7 +1,9 @@
+import Home from './Home.js';
 var React = require('react');
 var ReactRouter = require('react-router-dom');
 var Nav = require('./Nav');
-var Home = require('./Home');
+// var Home = require('./Home');
+
 var PageOne = require('./PageOne');
 var PageTwo = require('./PageTwo');
 var Switch = ReactRouter.Switch;
@@ -31,6 +33,6 @@ class App extends React.Component
     }
 }
 
-module.exports = App;
+export default App;
 
 // https://github.com/tylermcginnis/react-fundamentals/blob/children/app/components/App.js
