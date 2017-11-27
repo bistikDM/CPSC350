@@ -268,17 +268,25 @@ app.delete('/delete-workshop', async (req, res) =>
     {
         try
         {
-            var attendeeList = await pool.query(
-               'SELECT COUNT(ud.first_name) FROM user_database AS ud INNER JOIN enrollment_database AS ed ON ed.user_name = ud.user_name WHERE ed.workshop_id = (SELECT workshop_id FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3)', [title, date, location]);
-            if(attendeeList.rows[0].count == 0)
-            {
-                await pool.query('DELETE FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3', [title, date, location]);
-                res.json({status : 'deleted'});
-            }
-            else
-            {
-                res.json({status: 'the workshop is not empty'});
-            }
+			var checkWorkshop = await pool.query('SELECT title FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3', [title, date, location]);
+			if(checkWorkshop.rows.length == 0)
+			{
+				res.json({status: 'the workshop does not exit'});
+			}
+			else
+			{
+				var attendeeList = await pool.query(
+				   'SELECT COUNT(ud.first_name) FROM user_database AS ud INNER JOIN enrollment_database AS ed ON ed.user_name = ud.user_name WHERE ed.workshop_id = (SELECT workshop_id FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3)', [title, date, location]);
+				if(attendeeList.rows[0].count == 0)
+				{
+					await pool.query('DELETE FROM workshop_database WHERE title = $1 AND start_date = $2 AND location = $3', [title, date, location]);
+					res.json({status : 'deleted'});
+				}
+				else
+				{
+					res.json({status: 'the workshop is not empty'});
+				}
+			}
         } catch(e)
         {
             console.log('Error running request', e);
@@ -299,14 +307,22 @@ app.get('/user-enrollment', async (req, res) =>
    {
        try
        {
-            var workshopList = await pool.query(
-               'SELECT wd.title AS title, wd.start_date AS start_date, wd.location AS location FROM workshop_database AS wd INNER JOIN enrollment_database AS ed ON ed.workshop_id = wd.workshop_id WHERE ed.user_name = (SELECT user_name FROM user_database WHERE user_name = $1)', [username]);
-            var workshops = {workshops : []};
-            for(var x = 0; x < workshopList.rows.length; x++)
-            {
-                workshops.workshops.push({title : workshopList.rows[x].title, date : dateFormat(workshopList.rows[x].start_date, 'yyyy-mm-dd'), location : workshopList.rows[x].location});
-            }
-            res.json(workshops);
+			var checkUser = await pool.query('SELECT first_name FROM user_database WHERE user_name = $1', [username]);
+			if(checkUser.rows.length == 0)
+			{
+				res.json({status: 'the username does not exist'});
+			}
+			else
+			{
+				var workshopList = await pool.query(
+				   'SELECT wd.title AS title, wd.start_date AS start_date, wd.location AS location FROM workshop_database AS wd INNER JOIN enrollment_database AS ed ON ed.workshop_id = wd.workshop_id WHERE ed.user_name = (SELECT user_name FROM user_database WHERE user_name = $1)', [username]);
+				var workshops = {workshops : []};
+				for(var x = 0; x < workshopList.rows.length; x++)
+				{
+					workshops.workshops.push({title : workshopList.rows[x].title, date : dateFormat(workshopList.rows[x].start_date, 'yyyy-mm-dd'), location : workshopList.rows[x].location});
+				}
+				res.json(workshops);
+			}
        } catch(e)
        {
            console.log('Error running user enrollment request', e);

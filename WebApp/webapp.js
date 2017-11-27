@@ -11,9 +11,10 @@ var config =
 };
 var pool = new Pool(config);
 
-app.set('port', (process.env.PORT || 3001));
+app.set('port', (process.env.PORT || 8080));
 app.use(bodyParser.json({type: 'application/json'}));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static('foodwebapp/build'));
 
 app.get('/api/nutrition', async(req, res) =>
 {
@@ -34,12 +35,16 @@ app.get('/api/nutrition', async(req, res) =>
         console.log('Error running request', e);
     }
 });
+<<<<<<< HEAD
 /*
 if(process.env.NODE_ENV === 'production')
 {
     app.use(express.static('foodwebapp/build'));
 }
 */
+=======
+
+>>>>>>> refs/remotes/origin/master
 app.listen(app.get('port'), () => 
 {
 	console.log('Running');
