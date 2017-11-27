@@ -34,12 +34,12 @@ app.get('/api/nutrition', async(req, res) =>
         console.log('Error running request', e);
     }
 });
-
+/*
 if(process.env.NODE_ENV === 'production')
 {
     app.use(express.static('foodwebapp/build'));
 }
-
+*/
 app.listen(app.get('port'), () => 
 {
 	console.log('Running');
